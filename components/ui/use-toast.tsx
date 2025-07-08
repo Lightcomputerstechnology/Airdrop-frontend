@@ -1,18 +1,55 @@
-// components/ui/use-toast.tsx
+// components/ui/use-toast.ts
 
-import { useState } from "react";
+import * as React from "react";
+import { ToastActionElement, type ToastProps } from "@/components/ui/toast";
+
+const TOAST_LIMIT = 5;
+const TOAST_REMOVE_DELAY = 1000;
+
+type ToasterToast = ToastProps & {
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: ToastActionElement;
+};
+
+const toastQueue: ToasterToast[] = [];
+
+const listeners: ((toast: ToasterToast) => void)[] = [];
+
+function sendToast(toast: ToasterToast) {
+  if (listeners.length === 0) {
+    toastQueue.push(toast);
+  } else {
+    listeners.forEach((listener) => listener(toast));
+  }
+}
 
 export function useToast() {
-  const [toasts, setToasts] = useState<any[]>([]);
+  const [toasts, setToasts] = React.useState<ToasterToast[]>([]);
 
-  const toast = ({ title, description }: { title: string; description?: string }) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, title, description }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-    alert(`${title}\n${description}`); // ✅ simple fallback — replace with UI if needed
-  };
+  React.useEffect(() => {
+    function handleToast(toast: ToasterToast) {
+      setToasts((prev) => [...prev.slice(-TOAST_LIMIT + 1), toast]);
 
-  return { toast };
-}
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== toast.id));
+      }, toast.duration || 3000 + TOAST_REMOVE_DELAY);
+    }
+
+    listeners.push(handleToast);
+    toastQueue.splice(0, toastQueue.length).forEach(handleToast);
+
+    return () => {
+      const index = listeners.indexOf(handleToast);
+      if (index !== -1) listeners.splice(index, 1);
+    };
+  }, []);
+
+  function toast({ title, description }: { title: string; description?: string }) {
+    const id = Math.random().toString(36).substr(2, 9);
+    sendToast({ id, title, description });
+  }
+
+  return { toast, toasts };
+        }

@@ -1,5 +1,3 @@
-// components/ui/use-toast.ts
-
 import * as React from "react";
 import { ToastActionElement, type ToastProps } from "@/components/ui/toast";
 
@@ -10,7 +8,7 @@ type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
-  action?: ToastActionElement;
+  action?: React.ReactNode; // ✅ Fixed here
 };
 
 const toastQueue: ToasterToast[] = [];
@@ -52,4 +50,4 @@ export function useToast() {
   }
 
   return { toast, toasts };
-        }
+      }

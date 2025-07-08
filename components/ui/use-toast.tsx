@@ -1,3 +1,5 @@
+// components/ui/use-toast.tsx
+
 import * as React from "react";
 import { ToastActionElement, type ToastProps } from "@/components/ui/toast";
 
@@ -8,11 +10,11 @@ type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
-  action?: React.ReactNode; // ✅ Fixed here
+  action?: React.ReactNode;
+  duration?: number; // ✅ Added to fix TypeScript error
 };
 
 const toastQueue: ToasterToast[] = [];
-
 const listeners: ((toast: ToasterToast) => void)[] = [];
 
 function sendToast(toast: ToasterToast) {
@@ -32,7 +34,7 @@ export function useToast() {
 
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== toast.id));
-      }, toast.duration || 3000 + TOAST_REMOVE_DELAY);
+      }, (toast.duration || 3000) + TOAST_REMOVE_DELAY);
     }
 
     listeners.push(handleToast);
@@ -44,10 +46,18 @@ export function useToast() {
     };
   }, []);
 
-  function toast({ title, description }: { title: string; description?: string }) {
+  function toast({
+    title,
+    description,
+    duration,
+  }: {
+    title: string;
+    description?: string;
+    duration?: number;
+  }) {
     const id = Math.random().toString(36).substr(2, 9);
-    sendToast({ id, title, description });
+    sendToast({ id, title, description, duration });
   }
 
   return { toast, toasts };
-      }
+  }

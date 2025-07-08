@@ -3,7 +3,7 @@
 "use client"
 
 import * as React from "react"
-import type { ToastProps } from "@/components/ui/toast"
+import type { ToastProps } from "@/types/toast-types" // ✅ Corrected import
 
 const TOAST_LIMIT = 5
 const TOAST_REMOVE_DELAY = 3000
@@ -12,7 +12,7 @@ export interface ToasterToast extends ToastProps {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
-  action?: React.ReactNode // Accepts JSX like <ToastActionElement />
+  action?: React.ReactNode
 }
 
 type ToastFn = (options: {
@@ -30,7 +30,6 @@ function notify(toast: ToasterToast) {
   if (toastQueue.length > TOAST_LIMIT) toastQueue.pop()
   listeners.forEach(fn => fn([...toastQueue]))
 
-  // Auto-remove after delay
   setTimeout(() => {
     const idx = toastQueue.findIndex(t => t.id === toast.id)
     if (idx > -1) toastQueue.splice(idx, 1)
@@ -56,9 +55,9 @@ export function useToast(): { toasts: ToasterToast[]; toast: ToastFn } {
       description,
       variant,
       action,
-      className: "", // Optional, can be customized
+      className: "",
     })
   }
 
   return { toasts, toast }
-      }
+    }

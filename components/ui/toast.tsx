@@ -1,4 +1,4 @@
-// components/ui/toast.tsx
+"use client";
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -20,20 +20,23 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof toastVariants>
->(({ className, variant, ...props }, ref) => (
-  <div ref={ref} className={cn(toastVariants({ variant }), className)} {...props} />
-));
+export interface ToastProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof toastVariants> {}
+
+export const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
+  ({ className, variant, ...props }, ref) => (
+    <div ref={ref} className={cn(toastVariants({ variant }), className)} {...props} />
+  )
+);
 Toast.displayName = "Toast";
 
-const ToastProvider = ({ children }: { children: React.ReactNode }) => (
-  <div className="fixed z-[9999] flex flex-col gap-2 bottom-4 right-4 max-w-sm">
-    {children}
-  </div>
-);
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="fixed z-[9999] flex flex-col gap-2 bottom-4 right-4 max-w-sm">
+      {children}
+    </div>
+  );
+}
 
-const ToastViewport = () => null; // Not needed for basic implementation
-
-export { Toast, ToastProvider, ToastViewport };
+export function ToastViewport() {
+  return null; // Can be enhanced later if needed
+  }

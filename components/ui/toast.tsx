@@ -40,3 +40,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export function ToastViewport() {
   return null; // Can be enhanced later if needed
   }
+export const ToastActionElement = ({ label, onClick }: { label: string; onClick: () => void }) => (
+  <button onClick={onClick} className="ml-4 text-sm font-medium text-blue-500 hover:underline">
+    {label}
+  </button>
+);

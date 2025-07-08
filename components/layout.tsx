@@ -1,5 +1,6 @@
 // components/layout.tsx
 
+import "@/styles/globals.css"; // ✅ Fix added here
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
